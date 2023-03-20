@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  discord:
+    build: ./Discord
+    env_file:
+      - .env
+    ports:
+      - 8080:80
+    restart: on-failure
+    environment:
+      - "TOKEN=${TOKEN}"
+      - "CLIENT_ID=${CLIENT_ID}"
