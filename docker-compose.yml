@@ -1,6 +1,21 @@
 version: '3'
 
 services:
+  mysql:
+    build: ./SQL
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    restart: on-failure
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+    volumes:
+      - ./docker/data:/docker-entrypoint-initdb.d
+
   discord:
     build: ./Discord
     env_file:
@@ -11,3 +26,5 @@ services:
     environment:
       - "TOKEN=${TOKEN}"
       - "CLIENT_ID=${CLIENT_ID}"
+    depends_on:
+      - mysql
