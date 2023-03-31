@@ -2,29 +2,52 @@ version: '3'
 
 services:
   mysql:
-    build: ./SQL
+    build: 
+      context: ./SQL
+      args:
+        - "MYSQL_ROOT_PASSWORD = ${MYSQL_ROOT_PASSWORD}"
+        - "MYSQL_USER = ${MYSQL_USER}"
+        - "MYSQL_PASSWORD = ${MYSQL_PASSWORD}"
+        - "MYSQL_DATABASE = ${MYSQL_DATABASE}"
+    command: --default-authentication-plugin=mysql_native_password
     env_file:
       - .env
     ports:
-      - "3306:3306"
-    restart: on-failure
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      - "${MYSQL_PORT}:3306"
+    networks:
+      - db
+    restart: unless-stopped
     volumes:
-      - ./docker/data:/docker-entrypoint-initdb.d
+      - ./SQL/data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
 
   discord:
+    depends_on:
+      mysql:
+        condition: service_healthy
     build: ./Discord
     env_file:
       - .env
     ports:
       - 8080:80
-    restart: on-failure
+    networks:
+      - db
+    restart: unless-stopped
     environment:
       - "TOKEN=${TOKEN}"
       - "CLIENT_ID=${CLIENT_ID}"
-    depends_on:
-      - mysql
+      - "MYSQL_HOST=${MYSQL_HOST}"
+      - "MYSQL_USER=${MYSQL_USER}"
+      - "MYSQL_PASSWORD=${MYSQL_PASSWORD}"
+      - "MYSQL_DATABASE=${MYSQL_DATABASE}"
+      - "MYSQL_PORT=${MYSQL_PORT}"
+    stdin_open: true
+    tty: true
+    links:
+      - mysql:mysql
+  
+networks:
+  db:
