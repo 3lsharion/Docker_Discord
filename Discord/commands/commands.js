@@ -11,6 +11,10 @@ const commands = [
       name: 'card',
       description: 'Test command for card game!',
     },
+    {
+      name: 'fetch',
+      description: 'Fetch the site logs!',
+    },
   ];
 
 export function getCommands() {
