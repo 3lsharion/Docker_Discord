@@ -36,6 +36,9 @@ services:
     networks:
       - db
     restart: unless-stopped
+    volumes:
+      - ./Discord/commands:/usr/src/app/commands
+      - ./Discord/main.js:/usr/src/app/main.js
     environment:
       - "TOKEN=${TOKEN}"
       - "CLIENT_ID=${CLIENT_ID}"

@@ -7,6 +7,10 @@ const commands = [
       name: 'random',
       description: 'Replies with a random number!',
     },
+    {
+      name: 'card',
+      description: 'Test command for card game!',
+    },
   ];
 
 export function getCommands() {

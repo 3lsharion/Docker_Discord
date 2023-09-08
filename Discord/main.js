@@ -1,6 +1,6 @@
 import { REST, Routes, Client, GatewayIntentBits } from 'discord.js';
 import { getCommands } from './commands/commands.js';
-import { Sequelize } from 'sequelize';
+import { Sequelize, QueryTypes } from 'sequelize';
 import * as dbConfig from './db.config.js';
 
 const token = process.env.TOKEN;
@@ -36,6 +36,10 @@ client.on('interactionCreate', async interaction => {
   if (interaction.commandName === 'random') {
     await interaction.reply((Math.random()*10).toString());
   }
+
+  if (interaction.commandName === 'card') {
+    await interaction.reply('<@280726849842053120> card search Kage no Jitsu');
+  }
 });
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
@@ -61,3 +65,6 @@ try {
 } catch (error) {
   console.error('Unable to connect to the database:', error);
 }
+
+const crypto = await sequelize.query("SELECT * FROM crypto WHERE id = 1", { type: QueryTypes.SELECT });
+console.log(crypto);
