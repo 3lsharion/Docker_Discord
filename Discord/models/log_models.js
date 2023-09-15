@@ -104,3 +104,18 @@ export const trade = {
     }]]),
     content: [0, -0]
 }
+
+const data = [{
+    "type": "data",
+    "data": {
+        user: void 0,
+        sessionToken: ""
+    },
+    "uses": {}
+}, {
+    "type": "data",
+    "data": {
+        logs: []
+    },
+    "uses": {}
+}];

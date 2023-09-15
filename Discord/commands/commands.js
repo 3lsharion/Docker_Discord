@@ -1,22 +1,17 @@
-const commands = [
-    {
-      name: 'ping',
-      description: 'Replies with Pong!',
-    },
-    {
-      name: 'random',
-      description: 'Replies with a random number!',
-    },
-    {
-      name: 'card',
-      description: 'Test command for card game!',
-    },
-    {
-      name: 'fetch',
-      description: 'Fetch the site logs!',
-    },
-  ];
+import { SlashCommandBuilder } from 'discord.js';
 
-export function getCommands() {
-    return commands;
-}
+export const card = new SlashCommandBuilder()
+    .setName('card')
+    .setDescription('Test command for card game');
+
+export const logs = new SlashCommandBuilder()
+    .setName('logs')
+    .setDescription('Print the Enderbot logs')
+    .addStringOption(option =>
+      option.setName('type')
+        .setDescription('Type of logs you want to print')
+        .setRequired(true));
+
+export const ping = new SlashCommandBuilder()
+    .setName('ping')
+    .setDescription('Replies with Pong!');
