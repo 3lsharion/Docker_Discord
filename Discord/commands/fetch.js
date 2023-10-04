@@ -39,6 +39,76 @@ function initEmbed(logs) {
     return [embed,buttons];
 }
 
+function initProfileEmbed(infos) {
+    let rank_image_num = 0;
+    switch (infos.grade_code) {
+        case "bronze":
+            rank_image_num = 1;
+            break;
+        case "silver":
+            rank_image_num = 2;
+            break;
+        case "gold":
+            rank_image_num = 3;
+            break;
+        case "master":
+            rank_image_num = 4;
+            break;
+        case "competitor":
+            rank_image_num = 5;
+            break;
+        case "champion":
+            rank_image_num = 6;
+            break;
+        case "emperor":
+            rank_image_num = 7;
+            break;
+        case "legend":
+            rank_image_num = 8;
+            break;
+        default:
+            rank_image_num = 1;
+            break;
+    }
+
+    const embed = new EmbedBuilder()
+        .setColor('#000000')
+        .setAuthor({ name: 'RTA Stats'})
+        .setDescription('# '+infos.nickname)
+        .setThumbnail('https://static.smilegatemegaport.com/event/live/epic7/guide/images/hero/'+infos.hero_code+'_s.png')
+        .addFields({name: 'Points : ', value : '```'+infos.winScore+ '```', inline: true }
+        ,{name: 'Top : ', value : '```'+infos.topPercent+ ' %```', inline: true })
+        .addFields({name: 'Winrate (Last 10 days) : ', value : '```'+infos.battle_info.win_score+ ' W | '+infos.battle_info.lose_score+' L```'})
+        .setImage('https://static.smilegatemegaport.com/live/epic7stats/assets/images/common/grade/grade_'+rank_image_num+'.png')
+        .addFields({ name: '\u200B', value: '\u200B' })
+        .addFields({name: infos.hero_list[0].hero_code, value : '```'+infos.hero_list[0].win_score+ ' W | '+infos.hero_list[0].lose_score+' L```', inline: true }
+        ,{name: infos.hero_list[1].hero_code, value : '```'+infos.hero_list[1].win_score+ ' W | '+infos.hero_list[1].lose_score+' L```', inline: true },
+        {name: infos.hero_list[2].hero_code, value : '```'+infos.hero_list[2].win_score+ ' W | '+infos.hero_list[2].lose_score+' L```', inline: true }
+        ,{name: infos.hero_list[3].hero_code, value : '```'+infos.hero_list[3].win_score+ ' W | '+infos.hero_list[3].lose_score+' L```', inline: true },
+        {name: infos.hero_list[4].hero_code, value : '```'+infos.hero_list[4].win_score+ ' W | '+infos.hero_list[4].lose_score+' L```', inline: true })
+        .setTimestamp();
+    
+    const profile = new ButtonBuilder()
+        .setCustomId('profile')
+        .setLabel('Profile')
+        .setStyle(ButtonStyle.Secondary);
+
+    const picks = new ButtonBuilder()
+        .setCustomId('picks')
+        .setLabel('Top 5 Picks')
+        .setStyle(ButtonStyle.Secondary);
+    
+    const match = new ButtonBuilder()
+        .setCustomId('matchs')
+        .setLabel('Match History')
+        .setStyle(ButtonStyle.Secondary);
+
+    const buttons = new ActionRowBuilder()
+        .addComponents(profile, picks, match);
+
+    return [embed,buttons];
+}
+
 export async function getCardClaimLogs() {
     await fetchCommands();
     let logs = [];
@@ -89,15 +159,18 @@ export async function getTradeLogs() {
     return initEmbed(logs);
 }
 
-export async function getProfile(profileName) {
+export async function getProfile(profileName,regionTag) {
     let profile_id = "";
-    await axios.get('https://static.smilegatemegaport.com/gameRecord/epic7/epic7_user_world_eu.json').then(resp => {
+    let infos = {};
+    await axios.get('https://static.smilegatemegaport.com/gameRecord/epic7/epic7_user_world_'+regionTag+'.json').then(resp => {
         let profile = resp.data;
         let profileData = profile.users.find(user => user.nick_nm === profileName);
         profile_id = profileData.nick_no;
+        console.log(profileData);
     });
-    await axios.post('https://epic7.gg.onstove.com/gameApi/getUserInfo?nick_no='+profile_id+'&world_code=world_eu&lang=en').then(resp => {
-        let infos = resp.data;
-        console.log(infos);
+    await axios.post('https://epic7.gg.onstove.com/gameApi/getUserInfoSeason?nick_no='+profile_id+'&world_code=world_'+regionTag+'&lang=en&search_type=2&season_code=recent').then(resp => {
+        infos = resp.data;
+        console.log(infos.result_body);
     });
+    return initProfileEmbed(infos.result_body);
 }

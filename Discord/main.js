@@ -8,7 +8,7 @@ const slashCommands = [];
 
 // const token = process.env.TOKEN;
 // const client_id = process.env.CLIENT_ID;
-const token = "MTA4NzM0MzcwMjIyMzExNDM0MQ.GI_h1J.ZfBIp0ZBtiqIl0STeIetEtZNi5VIfHhBO-cxjg";
+const token = "MTA4NzM0M[NotAToken]zcwMjIyMzE[NotAToken]xNDM0MQ.GZrkok.X4o5bu[NotAToken]6m_T2b4ijlx66RhFF[NotAToken]0mEtnFuYINaJnSI";
 const client_id = "1087343702223114341";
 
 slashCommands.push(card.toJSON());
@@ -72,8 +72,8 @@ client.on('interactionCreate', async interaction => {
 
   if (interaction.commandName === 'profile') {  
     // await interaction.reply(getProfile(interaction.options.getString('profile')));
-    await getProfile(interaction.options.getString('name'));
-    await interaction.reply("test");
+    const profile_infos = await getProfile(interaction.options.getString('name'),interaction.options.getString('region'));
+    await interaction.reply({embeds : [profile_infos[0]], components: [profile_infos[1]]});
   }
 
 });

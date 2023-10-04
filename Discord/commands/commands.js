@@ -22,4 +22,8 @@ export const profile = new SlashCommandBuilder()
     .addStringOption(option =>
       option.setName('name')
         .setDescription('Profile name')
+        .setRequired(true))
+    .addStringOption(option =>
+        option.setName('region')
+        .setDescription('Region name (eu, global, asia, japan, korea')
         .setRequired(true));
