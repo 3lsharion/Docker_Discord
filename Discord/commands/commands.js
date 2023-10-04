@@ -15,3 +15,11 @@ export const logs = new SlashCommandBuilder()
 export const ping = new SlashCommandBuilder()
     .setName('ping')
     .setDescription('Replies with Pong!');
+
+export const profile = new SlashCommandBuilder()
+    .setName('profile')
+    .setDescription('Profile')
+    .addStringOption(option =>
+      option.setName('name')
+        .setDescription('Profile name')
+        .setRequired(true));

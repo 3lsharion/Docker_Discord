@@ -1,20 +1,20 @@
 import { REST, Routes, Client, GatewayIntentBits } from 'discord.js';
-import { fetchCommands } from './commands/fetch.js';
 import { Sequelize, QueryTypes } from 'sequelize';
 import * as dbConfig from './db.config.js';
-import {card, ping, logs} from './commands/commands.js';
-import { getTreasureLogs, getCardClaimLogs } from './commands/fetch.js';
+import {card, ping, logs, profile} from './commands/commands.js';
+import { getTreasureLogs, getCardClaimLogs, getCometLogs, getTradeLogs, getProfile } from './commands/fetch.js';
 
 const slashCommands = [];
 
 // const token = process.env.TOKEN;
 // const client_id = process.env.CLIENT_ID;
-const token = "MTA4NzM0MzcwMjIyMzE[trustme]xNDM0MQ.GI_h1J.ZfBIp0ZBtiqI[cecin'estpasuntoken]l0STeIetEtZNi5VIfHhBO-cxjg";
+const token = "MTA4NzM0MzcwMjIyMzExNDM0MQ.GI_h1J.ZfBIp0ZBtiqIl0STeIetEtZNi5VIfHhBO-cxjg";
 const client_id = "1087343702223114341";
 
 slashCommands.push(card.toJSON());
 slashCommands.push(ping.toJSON());
 slashCommands.push(logs.toJSON());
+slashCommands.push(profile.toJSON());
 
 const rest = new REST({ version: '10' }).setToken(token);
 
@@ -50,21 +50,32 @@ client.on('interactionCreate', async interaction => {
   if (interaction.commandName === 'logs') {
     switch (interaction.options.getString('type')) {
       case 'claim':
-        await interaction.reply({embeds : [await getCardClaimLogs()]});
+        const claim_logs = await getCardClaimLogs();
+        await interaction.reply({embeds : [claim_logs[0]], components: [claim_logs[1]]});
         break;
       case 'treasure':
-        await interaction.reply({embeds : [await getTreasureLogs()]});
+        const treasure_logs = await getTreasureLogs();
+        await interaction.reply({embeds : [treasure_logs[0]], components: [treasure_logs[1]]});
         break;
       case 'comet':
-        await interaction.reply('Comet Logs');
+        const comet_logs = await getCometLogs();
+        await interaction.reply({embeds : [comet_logs[0]], components: [comet_logs[1]]});
         break;
       case 'trade':
-        await interaction.reply('Trade Logs');
+        const trade_logs = await getTradeLogs();
+        await interaction.reply({embeds : [trade_logs[0]], components: [trade_logs[1]]});
         break;
       default:  
         await interaction.reply('Invalid Input');
     }
   }
+
+  if (interaction.commandName === 'profile') {  
+    // await interaction.reply(getProfile(interaction.options.getString('profile')));
+    await getProfile(interaction.options.getString('name'));
+    await interaction.reply("test");
+  }
+
 });
 
 const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
